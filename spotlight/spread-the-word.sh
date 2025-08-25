@@ -21,9 +21,9 @@ TARGETS=(
     "$REPO_ROOT/.gitattributes"
     "$REPO_ROOT/AGENTS.md"
     "$REPO_ROOT/CONTRIBUTING.md"
-    "$REPO_ROOT/jules.md"
     "$REPO_ROOT/LICENSE"
     "$REPO_ROOT/README.md"
+    "$REPO_ROOT/jules.md"
     "$REPO_ROOT/screensaver.sh"
 )
 
