@@ -41,7 +41,7 @@ cd bash-screensavers
 ./screensaver.sh
 ```
 ```
-Bash Screensavers v0.0.24 (Mystic Destiny)
+Bash Screensavers v0.0.25 (Mystic Messages)
 
   1 . alpha        - random colorful pixels
   2 . bouncing     - bouncing 'O' madness
