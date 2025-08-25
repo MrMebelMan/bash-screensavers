@@ -232,3 +232,4 @@ if [ "$1" == "-n" ] || [ "$1" == "--new" ]; then
 else
     main_menu
 fi
+ 
