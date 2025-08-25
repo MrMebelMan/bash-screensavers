@@ -101,3 +101,4 @@ That's it! The main `screensaver.sh` script will automatically detect your new c
  
  
  
+ 
