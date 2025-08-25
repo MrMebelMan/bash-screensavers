@@ -42,3 +42,4 @@ This script generates a series of shell commands to create a "spotlight" message
     ./spotlight/spread-the-word.sh
     ```
 3.  **Run the commands:** The script will output a series of shell commands. These commands will first modify the files, and then use `git add` and `git commit` to commit the changes. Review them, and if they look correct, copy and paste them into your terminal to execute them.
+ 
