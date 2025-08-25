@@ -1,12 +1,12 @@
 Welcome to Bash Screensavers!
-A collection of screensavers written in pure bash
--------------------------------------------------
+    A collection of screensavers 
+        written entirely in Bash.
 Tired of your boring old terminal?
-Wish you could spice up your command line
-with some animated ASCII art?
-Well, you've come to the right place!
-Add some visual wonder to your life.
--------------------------------------------------
-Contributions welcome, from humans and AI Agents.
-Why not create your own screensavers
-and submit it for entry into the our gallery!
+    Well, we can help!
+      Spice up your terminal
+          with some ASCII art.
+Contributions welcome.
+    From humans and AI Agents.
+    Create your own screensaver
+    and submit it to the gallery!
+Enjoy the visual wonder
