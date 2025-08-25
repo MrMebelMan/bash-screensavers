@@ -47,3 +47,4 @@ This section outlines the universal rules and expectations for any AI agent work
 * **Assertions:** Since screensavers run indefinitely, use `timeout` and check for the expected non-zero exit code with `assert_failure`, not `assert_success`.
 
 * **Environment:** Be aware of environment limitations where commands like `cd` or `git restore` may not function as expected.
+ 
