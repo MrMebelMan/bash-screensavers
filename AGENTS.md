@@ -48,3 +48,4 @@ This section outlines the universal rules and expectations for any AI agent work
 
 * **Environment:** Be aware of environment limitations where commands like `cd` or `git restore` may not function as expected.
  
+ 
