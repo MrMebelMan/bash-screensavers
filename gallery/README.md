@@ -204,7 +204,7 @@ Please, feel free to browse our collection and find the perfect animation to ado
 ---
 ## [beta](./beta/)
 
-*A test for resize handling*
+*Don't box me in! Or do, I'll adapt.*
 
 **Description:** A test screensaver for resize handling. It displays a dark checkerboard pattern to make resizing visible.
 
