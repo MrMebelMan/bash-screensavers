@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
-load 'libs/bats-support/load'
-load 'libs/bats-assert/load'
+load 'test_libs/bats-support-0.3.0/load.bash'
+load 'test_libs/bats-assert-2.2.0/load.bash'
 
 SCRIPT="gallery/fireworks/fireworks.sh"
 
