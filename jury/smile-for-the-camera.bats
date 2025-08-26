@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 setup() {
-    SCRIPT="tools/smile-for-the-camera.sh"
+    SCRIPT="spotlight/smile-for-the-camera.sh"
     chmod +x "$SCRIPT"
 
     BATS_TMPDIR=$(mktemp -d -t bats-smile-XXXXXX)
