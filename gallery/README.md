@@ -1,8 +1,28 @@
-# Gallery
+# 🏛️ The Grand Gallery of Bash Screensavers
 
-A full list of all screensavers in the gallery.
+Welcome, connoisseur of the command line! You have entered the Grand Gallery of Bash Screensavers, a curated collection of the finest digital art for your terminal.
 
-## alpha
+Each piece in our collection is a testament to the power and beauty of shell scripting, a symphony of `echo`, `sleep`, and `tput`. From the chaotic dance of bouncing 'O's to the serene cascade of digital rain, there is a masterpiece to suit every taste.
+
+Please, feel free to browse our collection and find the perfect animation to adorn your terminal.
+
+[alpha](#alpha) -
+[bouncing](#bouncing) -
+[cutesaver](#cutesaver) -
+[fireworks](#fireworks) -
+[life](#life) -
+[matrix](#matrix) -
+[pipes](#pipes) -
+[rain](#rain) -
+[speaky](#speaky) -
+[stars](#stars) -
+[tunnel](#tunnel) -
+[vibe](#vibe)
+- [beta](#beta)
+
+---
+
+## [alpha](./alpha/)
 
 *random colorful pixels*
 
@@ -17,7 +37,7 @@ A full list of all screensavers in the gallery.
 **[View Cast](./alpha/alpha.cast)**
 
 ---
-## bouncing
+## [bouncing](./bouncing/)
 
 *bouncing 'O' madness*
 
@@ -32,7 +52,7 @@ A full list of all screensavers in the gallery.
 **[View Cast](./bouncing/bouncing.cast)**
 
 ---
-## cutesaver
+## [cutesaver](./cutesaver/)
 
 *infinite loop of cuteness*
 
@@ -47,7 +67,7 @@ A full list of all screensavers in the gallery.
 **[View Cast](./cutesaver/cutesaver.cast)**
 
 ---
-## fireworks
+## [fireworks](./fireworks/)
 
 *Ooh! Aah! Pretty lights!*
 
@@ -62,7 +82,7 @@ A full list of all screensavers in the gallery.
 **[View Cast](./fireworks/fireworks.cast)**
 
 ---
-## life
+## [life](./life/)
 
 *cellular automata*
 
@@ -77,7 +97,7 @@ A full list of all screensavers in the gallery.
 **[View Cast](./life/life.cast)**
 
 ---
-## matrix
+## [matrix](./matrix/)
 
 *the matrix has you*
 
@@ -92,7 +112,7 @@ A full list of all screensavers in the gallery.
 **[View Cast](./matrix/matrix.cast)**
 
 ---
-## pipes
+## [pipes](./pipes/)
 
 *an endless pipe maze*
 
@@ -107,7 +127,7 @@ A full list of all screensavers in the gallery.
 **[View Cast](./pipes/pipes.cast)**
 
 ---
-## rain
+## [rain](./rain/)
 
 *soothing, gentle rain*
 
@@ -122,7 +142,7 @@ A full list of all screensavers in the gallery.
 **[View Cast](./rain/rain.cast)**
 
 ---
-## speaky
+## [speaky](./speaky/)
 
 *dramatic talking screensaver*
 
@@ -137,7 +157,7 @@ A full list of all screensavers in the gallery.
 **[View Cast](./speaky/speaky.cast)**
 
 ---
-## stars
+## [stars](./stars/)
 
 *twinkling starfield*
 
@@ -152,7 +172,7 @@ A full list of all screensavers in the gallery.
 **[View Cast](./stars/stars.cast)**
 
 ---
-## tunnel
+## [tunnel](./tunnel/)
 
 *fly into the digital tunnel*
 
@@ -167,7 +187,7 @@ A full list of all screensavers in the gallery.
 **[View Cast](./tunnel/tunnel.cast)**
 
 ---
-## vibe
+## [vibe](./vibe/)
 
 *vibe coding*
 
@@ -182,11 +202,12 @@ A full list of all screensavers in the gallery.
 **[View Cast](./vibe/vibe.cast)**
 
 ---
- 
- 
- 
- 
- 
- 
- 
- 
+## [beta](./beta/)
+
+*A test for resize handling*
+
+**Description:** A test screensaver for resize handling. It displays a dark checkerboard pattern to make resizing visible.
+
+**Authors:** Jules
+
+**License:** MIT

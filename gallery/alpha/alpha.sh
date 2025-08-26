@@ -28,11 +28,8 @@ while true; do
   y=$((RANDOM % height + 1))
   color_code=$((RANDOM % 256))
 
-  # Build the string to print
-  frame_buffer="\e[${y};${x}H\e[38;5;${color_code}m█"
-
   # Print the frame
-  printf '%b' "$frame_buffer"
+  printf "\e[${y};${x}H\e[38;5;${color_code}m█"
 
   sleep "$SLEEPY_TIME"
 done

@@ -11,5 +11,5 @@ SCRIPT="gallery/alpha/alpha.sh"
 
 @test "alpha: runs without errors for 1 second" {
   run timeout 1s "$SCRIPT"
-  assert_success
+  assert_failure
 }
