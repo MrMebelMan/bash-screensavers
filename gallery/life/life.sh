@@ -57,7 +57,6 @@ init() {
 }
 
 cleanup() {
-   while read -r -t 0.001 -N 1; do : ; done # Consumes any pending input bytes
    printf '\e[?25h' # Shows the cursor again
    printf '\e[?1049l' # Leaves the alternate screen
    exit 0

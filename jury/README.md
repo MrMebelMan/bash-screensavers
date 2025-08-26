@@ -28,3 +28,15 @@ Once you have assembled the jury, you can run the full test suite with the follo
 ```bash
 ./jury/test_libs/bats-core-1.12.0/bin/bats jury
 ```
+
+### Rendering the Verdict
+
+For your convenience, we have a master script that handles the entire judicial process. It assembles the jury and then runs the full test suite twice, saving the results in both human-readable and machine-readable formats.
+
+To run this script, execute the following command from the repository root:
+```bash
+./jury/render-the-verdict.sh
+```
+This will create two files in the `jury/` directory:
+*   `verdict.txt`: A "pretty" human-readable summary of the test results.
+*   `verdict.tap`: A machine-readable TAP (Test Anything Protocol) output, suitable for integration with CI/CD systems or other automated tools.

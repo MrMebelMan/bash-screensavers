@@ -13,12 +13,9 @@
 # Anyway, on with the cuteness. Let's load some title art.
 
 _cleanup_and_exit() { # handler for SIGINT (Ctrl‑C)
-  tput cnorm # show the cursor again
-  tput sgr0  # reset all attributes
-  echo
   exit 0
 }
-trap _cleanup_and_exit SIGINT # Catch Ctrl‑C
+trap _cleanup_and_exit EXIT INT TERM QUIT # Catch all common exit signals
 
 cd "$( dirname "${BASH_SOURCE[0]}" )" || exit
 

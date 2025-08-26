@@ -59,6 +59,36 @@ The tests for this project are written using the `bats` testing framework. Here 
 *   **Environment Limitations**: The testing environment can be restrictive. Commands like `cd`, `pwd`, and `git restore` may not work as expected. It's important to be aware of these limitations and find workarounds when necessary.
 
 ---
+
+## Learnings on Test Execution and Reporting
+
+This section documents the work done to simplify test execution and reporting.
+
+1.  **Idempotent Dependency Installation:**
+    *   **Issue:** The `assemble-the-jury.sh` script would re-download dependencies on every run, which was slow and could fail due to network timeouts.
+    *   **Resolution:** I modified the script to first check if the dependency directories exist before attempting to download and extract them. This makes the script idempotent and much faster on subsequent runs.
+
+2.  **Automated Test Runner:**
+    *   **Issue:** Running the tests required two separate commands: one to install dependencies and another to run the `bats` suite. The process was manual and didn't save the results.
+    *   **Resolution:** I created a new script, `jury/render-the-verdict.sh`, which automates the entire process. It calls `assemble-the-jury.sh` and then runs the test suite twice, saving the output to `jury/verdict.txt` (human-readable) and `jury/verdict.tap` (machine-readable).
+
+3.  **Location-Independent Scripts:**
+    *   **Issue:** The initial version of `render-the-verdict.sh` relied on being run from the repository root.
+    *   **Resolution:** I refactored the script to be location-independent. It now uses `dirname` on `${BASH_SOURCE[0]}` to determine its own location and constructs absolute paths, allowing it to be run from anywhere on the system.
+
+4.  **Fix for Hanging Trap Handler:**
+    *   **Issue:** The test suite was timing out because the `life.sh` script had a `read` command in its `trap cleanup` function, which would hang in a non-interactive environment. This issue was previously noted in the `tour-the-gallery.sh` learnings but the fix was not applied here.
+    *   **Resolution:** I removed the problematic `read` command from `gallery/life/life.sh`, allowing the script to terminate correctly when sent a signal by `timeout`.
+
+5.  **Fix for Incorrect Trap Handlers:**
+    *   **Issue:** Some scripts, like `cutesaver.sh`, were only trapping `SIGINT` (Ctrl+C). This meant that when run under `timeout` (which sends `SIGTERM`), their cleanup functions would not execute, potentially leaving the terminal in a bad state.
+    *   **Resolution:** I updated the `trap` commands in these scripts to also catch `EXIT`, `TERM`, and `QUIT`, ensuring that cleanup always runs.
+
+6.  **New Screensaver Template Fix:**
+    *   **Issue:** The template used to create new screensavers (`screensaver.sh --new`) contained the same incorrect `trap` handler, which would have propagated the bug to all new screensavers.
+    *   **Resolution:** I updated the template in `screensaver.sh` to use the correct, robust `trap` command.
+
+---
 # 👨‍💻 Jules's Corner
 
 This section contains notes and learnings specific to the agent Jules.

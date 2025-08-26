@@ -15,13 +15,10 @@ DELAY_DISSIPATE=0.2
 DELAY_BETWEEN=0.5
 
 _cleanup_and_exit() { # handler for SIGINT (Ctrl‑C)
-  tput cnorm       # show the cursor again
-  tput sgr0
-  echo
   exit 0
 }
 
-trap _cleanup_and_exit SIGINT # Ctrl‑C
+trap _cleanup_and_exit EXIT INT TERM QUIT # Ctrl‑C
 
 #
 # Draw the full firework at once. Used for the dissipation effect.
