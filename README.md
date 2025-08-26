@@ -16,6 +16,7 @@ when you have `echo`, `sleep`, and a little bit of `tput` magic?
 [Contributing](#contributing) - 
 [Spotlight](#spotlight) -
 [Jury](#jury) -
+[Library](#library) -
 [Chat](#chat)
 
 [![Release](https://img.shields.io/github/v/release/attogram/bash-screensavers?style=flat)](https://github.com/attogram/bash-screensavers/releases)
@@ -83,6 +84,11 @@ The jury makes sure the gallery is up-to-snuff.
 They test **everything**. They're a bit batsy about it.
 
 See the [Jury Criteria](./jury/README.md) for the rules.
+
+## Library
+Think of this as the art supply closet for our digital gallery. It's filled with reusable scripts and functions—our special blend of paints, brushes, and canvases—to help you craft your own visual masterpieces in bash.
+
+Step into the [workshop](./library/README.md) and see what's available.
 
 ## Chat
 
