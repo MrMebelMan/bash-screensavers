@@ -17,13 +17,10 @@ DELAY=0.02
 STARS=("*" "." "+" "'" "O")
 
 _cleanup_and_exit() { # handler for SIGINT (Ctrl‑C)
-  tput cnorm       # show the cursor again
-  tput sgr0
-  echo
   exit 0
 }
 
-trap _cleanup_and_exit SIGINT # Ctrl‑C
+trap _cleanup_and_exit EXIT INT TERM QUIT # Ctrl‑C
 
 #
 # Main animation loop

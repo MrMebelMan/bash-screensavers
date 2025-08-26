@@ -223,14 +223,6 @@ parse() {
 
 
 cleanup() {
-    # clear out standard input
-    read -t 0.001 && cat </dev/stdin>/dev/null
-
-    tput rmcup
-    tput cnorm
-    stty echo
-    printf "$SGR0"
-    echo
     exit 0
 }
 

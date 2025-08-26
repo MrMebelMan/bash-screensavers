@@ -169,7 +169,7 @@ _cleanup_and_exit() {
   echo
   exit 0
 }
-trap _cleanup_and_exit SIGINT # Catch Ctrl-C
+trap _cleanup_and_exit EXIT INT TERM QUIT # Catch all common exit signals
 
 animate() {
     tput civis # Hide cursor
