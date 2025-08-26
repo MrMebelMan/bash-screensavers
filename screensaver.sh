@@ -120,12 +120,11 @@ choose_screensaver() {
   read -r -e choice
 
   if [[ "$choice" == "r" || "$choice" == "random" ]]; then
-      run_random
-      exit 0 # exit after running random
+      return 2 # Special return code for random
   fi
   if [[ "$choice" =~ ^[0-9]+$ ]]; then   # Check if choice is a number
-    if [ "10#$choice" -ge 1 ] && [ "10#$choice" -le "${#screensavers[@]}" ]; then
-      chosen_screensaver="${screensavers[$((10#choice-1))]}"
+    if [ "$choice" -ge 1 ] && [ "$choice" -le "${#screensavers[@]}" ]; then
+      chosen_screensaver="${screensavers[$((choice-1))]}"
       return 0
     fi
   else # Check if choice is a name
@@ -212,16 +211,26 @@ _main_menu_cleanup() {
     echo; echo; echo 'Enjoyed Bash Screensavers? Give the project a star on GitHub! ✨'
     echo; echo "${BASH_SCREENSAVERS_URL}"; echo
 }
-trap _main_menu_cleanup EXIT
 
 main_menu() {
+    local run_random_first=$1
+    trap _main_menu_cleanup EXIT
+    if [[ "$run_random_first" == "random" ]]; then
+        run_random
+    fi
     while true; do
       tput setab 0 # black background
       tput setaf 2 # green foreground
       echo
 
-      if ! choose_screensaver; then
+      choose_screensaver
+      local choice_return=$?
+      if [[ $choice_return -eq 1 ]]; then
           continue # Invalid choice, re-show menu
+      fi
+      if [[ $choice_return -eq 2 ]]; then
+          run_random
+          continue # Run random, then re-show menu
       fi
 
       enjoy_a_screensaver "$chosen_screensaver" # run until user presses ^C
@@ -252,8 +261,8 @@ run_direct() {
     fi
 
     if [[ "$choice" =~ ^[0-9]+$ ]]; then   # Check if choice is a number
-        if [ "10#$choice" -ge 1 ] && [ "10#$choice" -le "${#screensavers[@]}" ]; then
-            chosen_screensaver="${screensavers[$((10#choice-1))]}"
+        if [ "$choice" -ge 1 ] && [ "$choice" -le "${#screensavers[@]}" ]; then
+            chosen_screensaver="${screensavers[$((choice-1))]}"
             enjoy_a_screensaver "$chosen_screensaver"
             return 0
         fi
@@ -298,11 +307,21 @@ main() {
                 echo "$BASH_SCREENSAVERS_DESCRIPTION"
                 echo
                 echo "$BASH_SCREENSAVERS_USAGE"
-                exit 0
+                if [ $# -eq 1 ]; then
+                    exit 0
+                fi
+                shift
+                main "$@"
+                exit $?
                 ;;
             -v|--version)
                 echo "$BASH_SCREENSAVERS_NAME v$BASH_SCREENSAVERS_VERSION"
-                exit 0
+                if [ $# -eq 1 ]; then
+                    exit 0
+                fi
+                shift
+                main "$@"
+                exit $?
                 ;;
             -n|--new)
                 if [ -z "$2" ]; then
@@ -314,7 +333,7 @@ main() {
                 exit 0
                 ;;
             -r|--random)
-                run_random
+                main_menu "random"
                 exit 0
                 ;;
             *)
