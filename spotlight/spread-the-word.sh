@@ -10,9 +10,11 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 REPO_ROOT=$(dirname "$SCRIPT_DIR")
 
-# The 12 files/directories that are most likely to be at the top of the repo page.
+# The 14 files/directories that are most likely to be at the top of the repo page.
 # This list is hardcoded and can be customized by editing this script.
 TARGETS=(
+    "$REPO_ROOT/library/README.md"
+    "$REPO_ROOT/library/library-of-visualizations.sh"
     "$REPO_ROOT/.github/workflows/create.release.for.tag.yml"
     "$REPO_ROOT/gallery/README.md"
     "$REPO_ROOT/jury/README.md"
