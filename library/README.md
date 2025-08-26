@@ -8,11 +8,7 @@ This directory contains reusable libraries for the Bash Screensavers project.
 
 Welcome, aspiring terminal artist, to the Library of Visualizations! Think of this as your personal art supply store for the command line. Instead of oils and acrylics, we offer a curated collection of bash functions to paint your terminal with dazzling displays. Whether you need to splash some color, move things around, or just make your script exit with a bit of flair, this is the place to be. No smocks required.
 
-To use it, source it in your script:
-`bash
-# Make sure to get the path to the library correctly
-source /path/to/library/library-of-visualizations.sh
-`
+
 Function Reference
 Cleanup and Setup
 lov_die_with_honor()
