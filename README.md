@@ -36,11 +36,23 @@ The [Gallery README](./gallery/README.md) has info on all the screensavers.
 
 ## Quickstart
 
+To get started, clone the repository and run the main script:
 ```bash
 git clone https://github.com/attogram/bash-screensavers.git
 cd bash-screensavers
 ./screensaver.sh
 ```
+This will display the interactive menu where you can choose a screensaver.
+
+### Command-Line Usage
+
+Alternatively, you can launch a screensaver directly from the command line or use one of the following options:
+
+*   `./screensaver.sh [name]`: Launch a specific screensaver by its name (e.g., `matrix`).
+*   `./screensaver.sh [number]`: Launch a specific screensaver by its number from the menu.
+*   `./screensaver.sh -r` or `--random`: Launch a random screensaver.
+*   `./screensaver.sh -h` or `--help`: Display the help message.
+*   `./screensaver.sh -v` or `--version`: Display the version information.
 ```
 Bash Screensavers v0.0.25 (Mystic Messages)
 

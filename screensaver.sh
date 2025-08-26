@@ -7,8 +7,8 @@
 #
 
 BASH_SCREENSAVERS_NAME='Bash Screensavers'
-BASH_SCREENSAVERS_VERSION='0.0.25'
-BASH_SCREENSAVERS_CODENAME='Mystic Messages'
+BASH_SCREENSAVERS_VERSION='0.0.24'
+BASH_SCREENSAVERS_CODENAME='Mystic Destiny'
 BASH_SCREENSAVERS_URL='https://github.com/attogram/bash-screensavers'
 BASH_SCREENSAVERS_DISCORD='https://discord.gg/BGQJCbYVBa'
 BASH_SCREENSAVERS_LICENSE='MIT'
@@ -28,7 +28,8 @@ peak_into_the_gallery() {
       name="$(basename "${screensaver}")"
       run="${screensaver}${name}.sh"
       if [[ -f "${run}" ]]; then
-        printf '%s\n' "$run"
+        printf '%s
+' "$run"
       fi
     fi
   done
@@ -46,10 +47,17 @@ enjoy_a_screensaver() {
     fi
     if [[ ! -x "$visual_goodness" ]]; then
         tput setaf 1 # red foreground
-        printf "\nWoah there, partner! This screensaver ain't ready for the big show yet.\n"
-        printf "Give it some execute permissions and we'll be in business:\n\n"
-        printf "chmod +x %s\n\n" "$visual_goodness"
-        printf "(Press ^C to exit and fix, or to ponder the meaning of file permissions)\n"
+        printf "
+Woah there, partner! This screensaver ain't ready for the big show yet.
+"
+        printf "Give it some execute permissions and we'll be in business:
+
+"
+        printf "chmod +x %s
+
+" "$visual_goodness"
+        printf "(Press ^C to exit and fix, or to ponder the meaning of file permissions)
+"
         tput setaf 2 # back to green
         return 2
     fi
@@ -94,9 +102,11 @@ choose_screensaver() {
         fi
     ) 2>/dev/null )"
     if [[ -z "$tagline" ]]; then
-        printf '  %-2s. %s     \n' "$i" "$name"
+        printf '  %-2s. %s
+' "$i" "$name"
     else
-        printf '  %-2s. %-12s - %s     \n' "$i" "$name" "$tagline"
+        printf '  %-2s. %-12s - %s
+' "$i" "$name" "$tagline"
     fi
     i=$((i+1))
   done
@@ -109,9 +119,13 @@ choose_screensaver() {
   echo -n 'Choose your screensaver: '
   read -r -e choice
 
+  if [[ "$choice" == "r" || "$choice" == "random" ]]; then
+      run_random
+      exit 0 # exit after running random
+  fi
   if [[ "$choice" =~ ^[0-9]+$ ]]; then   # Check if choice is a number
-    if [ "$choice" -ge 1 ] && [ "$choice" -le "${#screensavers[@]}" ]; then
-      chosen_screensaver="${screensavers[$((choice-1))]}"
+    if [ "10#$choice" -ge 1 ] && [ "10#$choice" -le "${#screensavers[@]}" ]; then
+      chosen_screensaver="${screensavers[$((10#choice-1))]}"
       return 0
     fi
   else # Check if choice is a name
@@ -215,28 +229,101 @@ main_menu() {
       if (( screensaver_return )); then
             tput setab 0 # black background
             tput setaf 1 # red foreground
-            printf '\n\nOh no! Screensaver had trouble! Error code: %d\n\n' "$screensaver_return"
+            printf '
+
+Oh no! Screensaver had trouble! Error code: %d
+
+' "$screensaver_return"
             tput sgr0 # reset
         fi
     done
 }
 
-# TODO: better arg handling, add: -version, -help, -verbose and whatever
+BASH_SCREENSAVERS_DESCRIPTION="A collection of screensavers written in bash."
+BASH_SCREENSAVERS_USAGE="Usage: $0 [-h|--help] [-v|--version] [-n <name>|--new <name>] [-r|--random] [name|number]"
 
-if [ "$1" == "-n" ] || [ "$1" == "--new" ]; then
-    if [ -z "$2" ]; then
-        echo "Error: missing screensaver name for $1 option." >&2
+run_direct() {
+    local choice="$1"
+    local screensavers
+    mapfile -t screensavers < <(peak_into_the_gallery)
+    if [[ ${#screensavers[@]} -eq 0 ]]; then
+        echo "Whoops! No screensavers found." >&2
         exit 1
     fi
-    create_new_screensaver "$2"
-else
+
+    if [[ "$choice" =~ ^[0-9]+$ ]]; then   # Check if choice is a number
+        if [ "10#$choice" -ge 1 ] && [ "10#$choice" -le "${#screensavers[@]}" ]; then
+            chosen_screensaver="${screensavers[$((10#choice-1))]}"
+            enjoy_a_screensaver "$chosen_screensaver"
+            return 0
+        fi
+    else # Check if choice is a name
+        local names=()
+        for saver in "${screensavers[@]}"; do
+            names+=("$(basename "$saver" .sh)")
+        done
+        local index=0
+        for name in "${names[@]}"; do
+            if [[ "$name" == "$choice" ]]; then
+                chosen_screensaver="${screensavers[$index]}"
+                enjoy_a_screensaver "$chosen_screensaver"
+                return 0
+            fi
+            index=$((index+1))
+        done
+    fi
+
+    echo "Error: invalid screensaver '$choice'" >&2
+    echo "$BASH_SCREENSAVERS_USAGE" >&2
+    exit 1
+}
+
+run_random() {
+    local screensavers
+    mapfile -t screensavers < <(peak_into_the_gallery)
+    if [[ ${#screensavers[@]} -eq 0 ]]; then
+        echo "Whoops! No screensavers found." >&2
+        exit 1
+    fi
+    local random_index=$((RANDOM % ${#screensavers[@]}))
+    chosen_screensaver="${screensavers[$random_index]}"
+    enjoy_a_screensaver "$chosen_screensaver"
+}
+
+main() {
+    if [[ "$1" ]]; then
+        case "$1" in
+            -h|--help)
+                echo "$BASH_SCREENSAVERS_NAME v$BASH_SCREENSAVERS_VERSION"
+                echo "$BASH_SCREENSAVERS_DESCRIPTION"
+                echo
+                echo "$BASH_SCREENSAVERS_USAGE"
+                exit 0
+                ;;
+            -v|--version)
+                echo "$BASH_SCREENSAVERS_NAME v$BASH_SCREENSAVERS_VERSION"
+                exit 0
+                ;;
+            -n|--new)
+                if [ -z "$2" ]; then
+                    echo "Error: missing screensaver name for $1 option." >&2
+                    echo "$BASH_SCREENSAVERS_USAGE" >&2
+                    exit 1
+                fi
+                create_new_screensaver "$2"
+                exit 0
+                ;;
+            -r|--random)
+                run_random
+                exit 0
+                ;;
+            *)
+                run_direct "$1"
+                exit 0
+                ;;
+        esac
+    fi
     main_menu
-fi
- 
- 
- 
- 
- 
- 
- 
- 
+}
+
+main "$@"
