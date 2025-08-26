@@ -3,12 +3,21 @@
 #~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 # SPEAKY - A dramatic, talking screensaver
 #
-# With a little help from my friend, Jules.
-#~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+# With a little help from my friends, the Library of Visualizations
+# and the Library of Voices.
+#~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-T-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+
+# --- Load Libraries ---
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+source "$SCRIPT_DIR/../../library/library-of-visualizations.sh"
+source "$SCRIPT_DIR/../../library/library-of-voices.sh"
 
 # --- Timing Constants ---
 MAX_SPEAKING_TIME=10
-MAX_DISPLAY_TIME=30
+MAX_DISPLAY_TIME=10 # Reduced from 30 to be less boring
+
+# --- Color Palette ---
+RAINBOW_COLORS=(196 202 208 214 220 226 190 154 118 82 46)
 
 # --- Phrase Libraries ---
 
@@ -344,214 +353,68 @@ error_phrases=(
     "This was meant to be an audio-visual experience. Now it's just visual. Enjoy."
 )
 
-# --- Text-to-Speech (TTS) Helper ---
-TTS_ENGINE=""
-SPEAK_PID=0
-SAY_VOICES=()
-
-# Get voices for macOS 'say' command
-#
-# Output: SAY_VOICES - array of voice names
-tts_get_voices_say() {
-    if ! command -v say &>/dev/null; then
-        return
-    fi
-    local raw_voices
-    raw_voices=$(say -v '?')
-    if [[ -z "$raw_voices" ]]; then
-        return
-    fi
-    while IFS= read -r line; do
-        [[ -z "$line" ]] && continue
-        local line_no_comment="${line%%#*}"
-        local locale
-        locale=$(awk '{ for (i=NF; i>0; i--) { if ($i ~ /^[a-z][a-z]_[A-Z][A-Z]$/) { print $i; exit } } }' <<<"$line_no_comment")
-        [[ -z "$locale" ]] && continue
-        local voice
-        voice=$(awk -v loc="$locale" '{ for (i=1; i<=NF; i++) { if ($i == loc) { for (j=1; j<i; j++) { printf "%s%s", $j, (j<i-1 ? OFS : "") }; exit } } }' <<<"$line_no_comment")
-        if [[ -n "$voice" ]]; then
-            # Filter for English and approved bilingual voices.
-            # Some non-English voices are surprisingly good with English phrases,
-            # and some English voices are... not. This is a curated list.
-            if [[ "$locale" == en* ]] ||
-               [[ "$voice" == "Emilio" ]] ||
-               [[ "$voice" == "Valeria" ]] ||
-               [[ "$voice" == "Rod" ]] ||
-               [[ "$voice" == "Rodrigo" ]]; then
-                SAY_VOICES+=("$voice")
-            fi
-        fi
-    done <<<"$raw_voices"
-}
-
-tts_detect_engine() {
-    TTS_ENGINE=""
-    if command -v say &>/dev/null; then
-        TTS_ENGINE="say"
-        tts_get_voices_say
-    elif command -v spd-say &>/dev/null; then TTS_ENGINE="spd-say";
-    elif command -v espeak &>/dev/null; then TTS_ENGINE="espeak";
-    elif command -v festival &>/dev/null; then TTS_ENGINE="festival";
-    elif command -v flite &>/dev/null; then TTS_ENGINE="flite";
-    elif command -v gtts-cli &>/dev/null && command -v aplay &>/dev/null; then TTS_ENGINE="gtts-cli";
-    elif command -v pico2wave &>/dev/null && command -v aplay &>/dev/null; then TTS_ENGINE="pico2wave";
-    elif command -v powershell.exe &>/dev/null; then TTS_ENGINE="powershell";
-    elif command -v cscript &>/dev/null; then
-        local vbs_path; vbs_path=$(dirname "$0")/tts.vbs
-        if [ -f "$vbs_path" ]; then TTS_ENGINE="cscript"; fi
-    fi
-}
-
-say_txt() {
-    if [ -z "$TTS_ENGINE" ]; then return; fi
-    local phrase="$1"; local phrase_ps; phrase_ps=$(echo "$phrase" | sed "s/'/''/g")
-    case "$TTS_ENGINE" in
-        "say")
-            if [ ${#SAY_VOICES[@]} -gt 0 ]; then
-                local random_voice=${SAY_VOICES[$RANDOM % ${#SAY_VOICES[@]}]}
-                say -v "$random_voice" "$phrase" &
-            else
-                say "$phrase" &
-            fi
-            ;;
-        "spd-say")    spd-say -r -20 "$phrase" & ;;
-        "espeak")     espeak "$phrase" & ;;
-        "flite")      flite -t "$phrase" & ;;
-        "festival")   echo "$phrase" | festival --tts & ;;
-        "gtts-cli")   gtts-cli -l en - --output - "$phrase" | aplay & ;;
-        "pico2wave")
-            local tmpfile
-            tmpfile=$(mktemp /tmp/speaky_tts.XXXXXX.wav)
-            pico2wave -l en-US -w "$tmpfile" "$phrase" && aplay "$tmpfile" && rm "$tmpfile" & ;;
-        "powershell")
-            powershell.exe -Command "Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('$phrase_ps')" & ;;
-        "cscript")
-            local vbs_path; vbs_path=$(dirname "$0")/tts.vbs
-            cscript //nologo /E:vbscript "$vbs_path" "$phrase" & ;;
-    esac
-    SPEAK_PID=$!
-}
-
-kill_speech() {
-    if [ $SPEAK_PID -ne 0 ]; then
-        # Kill the process and any children
-        if command -v pkill &>/dev/null; then
-            pkill -P $SPEAK_PID &>/dev/null
+wait_for_speech() {
+    if [ "$LOV_SPEAK_PID" -ne 0 ]; then
+        local child_pid
+        if command -v pgrep &>/dev/null; then
+            child_pid=$(pgrep -P "$LOV_SPEAK_PID")
         else
-            # Fallback for systems without pkill (like Cygwin)
-            kill $(ps -ef | awk -v ppid="$SPEAK_PID" '$3==ppid {print $2}') &>/dev/null
+            child_pid=$(ps -ef | awk -v ppid="$LOV_SPEAK_PID" '$3==ppid {print $2}')
         fi
-        kill $SPEAK_PID &>/dev/null
-        wait $SPEAK_PID &>/dev/null
+
+        if [ -n "$child_pid" ]; then
+            timeout ${MAX_SPEAKING_TIME}s wait "$child_pid" &>/dev/null
+        else
+            timeout ${MAX_SPEAKING_TIME}s wait "$LOV_SPEAK_PID" &>/dev/null
+        fi
     fi
 }
 
 cleanup_and_exit() {
-    kill_speech
-    tput cnorm; tput sgr0; clear
+    lov_kill_speech
+    lov_cleanup
     local exit_phrase=${exit_phrases[$RANDOM % ${#exit_phrases[@]}]}
-    say_txt "$exit_phrase"
-    animate_text_rainbow "$exit_phrase"
-    wait $SPEAK_PID &>/dev/null
-    tput cnorm; tput sgr0; echo
+    lov_say "$exit_phrase"
+    lov_animate_text_rainbow "$exit_phrase" "${RAINBOW_COLORS[*]}" "$MAX_DISPLAY_TIME"
+    wait_for_speech
+    lov_show_cursor
+    echo
     exit 0
 }
 
 trap cleanup_and_exit SIGINT SIGTERM
 
-# --- Animation and Color Functions ---
-
-# Function to convert HSL to RGB
-# Not available in bash, so we use a pre-computed rainbow palette
-RAINBOW_COLORS=(196 202 208 214 220 226 190 154 118 82 46)
-
-animate_text_rainbow() {
-    local phrase="$1"
-    local width
-    width=$(tput cols)
-    local height
-    height=$(tput lines)
-    local len=${#phrase}
-
-    # Calculate random position, ensuring the phrase fits on screen
-    local x=$((RANDOM % (width - len) + 1))
-    local y=$((RANDOM % height + 1))
-
-    tput cup "$y" "$x"
-
-    # Approximate sleep duration based on phrase length
-    # This gives the "streaming" effect
-    local sleep_duration
-    if [ "$len" -gt 0 ]; then
-        # Calculate sleep duration to fit within MAX_DISPLAY_TIME
-        sleep_duration=$(awk "BEGIN {print $MAX_DISPLAY_TIME / $len}")
-        # But don't let it be too slow for short phrases
-        if (( $(echo "$sleep_duration > 0.1" | bc -l) )); then
-            sleep_duration=0.1
-        fi
-    else
-        sleep_duration=0.1
-    fi
-
-
-    for (( i=0; i<len; i++ )); do
-        local char="${phrase:$i:1}"
-        # Cycle through the rainbow colors
-        local color_index=$(( (i + RANDOM) % ${#RAINBOW_COLORS[@]} ))
-        tput setaf "${RAINBOW_COLORS[$color_index]}"
-        printf "%s" "$char"
-        sleep "$sleep_duration"
-    done
-
-    # Wait for speech to finish, with a max timeout
-    if [ $SPEAK_PID -ne 0 ]; then
-        local child_pid
-        if command -v pgrep &>/dev/null; then
-            child_pid=$(pgrep -P "$SPEAK_PID")
-        else
-            # Fallback for systems without pgrep (like Cygwin)
-            child_pid=$(ps -ef | awk -v ppid="$SPEAK_PID" '$3==ppid {print $2}')
-        fi
-
-        if [ -n "$child_pid" ]; then
-            # Wait for the actual player process, not the wrapper script
-            timeout ${MAX_SPEAKING_TIME}s wait "$child_pid" &>/dev/null
-        else
-            timeout ${MAX_SPEAKING_TIME}s wait $SPEAK_PID &>/dev/null
-        fi
-    fi
-}
-
-
 # --- The Main Event ---
 the_show_must_go_on() {
-    tts_detect_engine
-    tput civis
-    tput setab 0 # Set background to black
-    clear
+    lov_detect_engine
+    lov_hide_cursor
+    lov_back_color 0 # Set background to black
+    lov_clear_screen
 
-    if [ -z "$TTS_ENGINE" ]; then
+    if [ -z "$LOV_TTS_ENGINE" ]; then
         local error_phrase=${error_phrases[$RANDOM % ${#error_phrases[@]}]}
-        animate_text_rainbow "$error_phrase"
+        lov_animate_text_rainbow "$error_phrase" "${RAINBOW_COLORS[*]}" "$MAX_DISPLAY_TIME"
         sleep 2
-        clear
+        lov_clear_screen
     else
         # Intro phrase
         local intro_phrase=${intro_phrases[$RANDOM % ${#intro_phrases[@]}]}
-        say_txt "$intro_phrase"
-        animate_text_rainbow "$intro_phrase"
-        kill_speech
+        lov_say "$intro_phrase"
+        lov_animate_text_rainbow "$intro_phrase" "${RAINBOW_COLORS[*]}" "$MAX_DISPLAY_TIME"
+        wait_for_speech
+        lov_kill_speech
         sleep 2
-        clear
+        lov_clear_screen
     fi
 
     while true; do
         local phrase=${general_phrases[$RANDOM % ${#general_phrases[@]}]}
-        say_txt "$phrase"
-        animate_text_rainbow "$phrase"
-        kill_speech
+        lov_say "$phrase"
+        lov_animate_text_rainbow "$phrase" "${RAINBOW_COLORS[*]}" "$MAX_DISPLAY_TIME"
+        wait_for_speech
+        lov_kill_speech
         sleep 2 # Pause between phrases
-        clear
+        lov_clear_screen
     done
 }
 

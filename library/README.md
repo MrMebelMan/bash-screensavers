@@ -119,3 +119,44 @@ Welcome, aspiring terminal artist, to the Library of Visualizations! Think of th
     *   `$1`: The string to select a character from.
 *   **Outputs:** Prints one random character to `stdout`, without a trailing newline.
 *   **Return Codes:** None
+
+---
+
+## `library-of-voices.sh`
+
+Step right up and lend an ear to the Library of Voices! This isn't your typical dusty, silent library. This is a sonic workshop, a collection of bash functions dedicated to giving your screensavers a voice. Whether you want your creations to whisper sweet nothings, shout existential questions into the void, or just say "hello," this library is your backstage pass to the world of Text-to-Speech (TTS).
+
+---
+
+### Function Reference
+
+#### Core Functions
+
+### `lov_detect_engine()`
+*   **Description:** Detects the available TTS engine on the system and stores it in the `LOV_TTS_ENGINE` global variable. This function should be called once at the beginning of your script. It checks for a variety of engines, from `say` on macOS to `espeak` on Linux and even a `cscript` fallback for Windows.
+*   **Inputs:** None
+*   **Outputs:** Sets the `LOV_TTS_ENGINE` global variable.
+*   **Return Codes:** None
+
+### `lov_say()`
+*   **Description:** Speaks the given text using the detected TTS engine. The speech is run as a background process. The process ID is stored in the `LOV_SPEAK_PID` global variable.
+*   **Inputs:**
+    *   `$1`: The phrase to be spoken.
+*   **Outputs:**
+    *   Initiates the TTS process.
+    *   Sets the `LOV_SPEAK_PID` global variable to the process ID of the speech command.
+*   **Return Codes:** None
+
+### `lov_kill_speech()`
+*   **Description:** Stops any currently running speech process that was started by `lov_say()`. This is useful for cleaning up when your script exits or when you want to interrupt the speech.
+*   **Inputs:** None
+*   **Outputs:** None
+*   **Return Codes:** None
+
+#### macOS Specific
+
+### `lov_get_voices_say()`
+*   **Description:** Fetches the list of available voices for the `say` command on macOS. This function is called automatically by `lov_detect_engine()` if the `say` command is found. The voices are stored in the `LOV_SAY_VOICES` global array.
+*   **Inputs:** None
+*   **Outputs:** Populates the `LOV_SAY_VOICES` array.
+*   **Return Codes:** None

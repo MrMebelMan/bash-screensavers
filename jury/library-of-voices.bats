@@ -1,0 +1,35 @@
+#!/usr/bin/env bats
+
+load 'libs/bats-support/load'
+load 'libs/bats-assert/load'
+
+setup() {
+    source "$(dirname "$BATS_TEST_FILENAME")/../library/library-of-voices.sh"
+}
+
+@test "library-of-voices: can be sourced" {
+    run type lov_detect_engine
+    assert_output --partial "is a function"
+}
+
+@test "library-of-voices: lov_detect_engine function exists" {
+    run type lov_detect_engine
+    assert_output --partial "is a function"
+}
+
+@test "library-of-voices: lov_say function exists" {
+    run type lov_say
+    assert_output --partial "is a function"
+}
+
+@test "library-of-voices: lov_kill_speech function exists" {
+    run type lov_kill_speech
+    assert_output --partial "is a function"
+}
+
+@test "library-of-voices: lov_detect_engine sets a TTS engine" {
+    lov_detect_engine
+    # This test might fail in a very minimal environment.
+    # We will check that the variable is not empty.
+    assert [ -n "$LOV_TTS_ENGINE" ]
+}

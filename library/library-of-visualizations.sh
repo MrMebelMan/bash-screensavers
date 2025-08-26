@@ -320,3 +320,61 @@ lov_print_random_char_from_string() {
   local index=$(lov_get_random_int 0 $((len - 1)))
   echo -n "${str:$index:1}"
 }
+
+#
+# Function: lov_animate_text_rainbow
+#
+# Description:
+#   Animates a string of text at a random position on the screen, with each
+#   character displayed in a different color from a provided palette.
+#
+# Inputs:
+#   $1: The string of text to animate.
+#   $2: A string containing the space-separated list of colors to use.
+#   $3 (optional): The maximum time in seconds the animation should take.
+#                  Defaults to 10.
+#
+# Outputs:
+#   Displays the animated text on the screen.
+#
+# Dependencies:
+#   - `bc` for floating point calculations.
+#   - `lov_get_terminal_size`, `lov_get_random_int`, `lov_move_cursor`,
+#     `lov_fore_color` from this same library.
+#
+lov_animate_text_rainbow() {
+    local phrase="$1"
+    local colors_str="$2"
+    local max_display_time="${3:-10}" # Default to 10 seconds
+
+    local -a colors=($colors_str)
+    if [ ${#colors[@]} -eq 0 ]; then return; fi # Do nothing if no colors
+
+    lov_get_terminal_size
+    local len=${#phrase}
+    if [ "$len" -eq 0 ]; then return; fi # Do nothing if phrase is empty
+
+    # Calculate random position, ensuring the phrase fits on screen
+    local x=$(lov_get_random_int 0 $((LOV_TERM_WIDTH - len)))
+    local y=$(lov_get_random_int 0 $((LOV_TERM_HEIGHT - 1)))
+
+    lov_move_cursor "$y" "$x"
+
+    # Approximate sleep duration based on phrase length
+    local sleep_duration
+    # Calculate sleep duration to fit within max_display_time
+    sleep_duration=$(awk "BEGIN {print $max_display_time / $len}")
+    # But don't let it be too slow for short phrases
+    if (( $(echo "$sleep_duration > 0.1" | bc -l) )); then
+        sleep_duration=0.1
+    fi
+
+    for (( i=0; i<len; i++ )); do
+        local char="${phrase:$i:1}"
+        # Cycle through the provided colors
+        local color_index=$(( (i + RANDOM) % ${#colors[@]} ))
+        lov_fore_color "${colors[$color_index]}"
+        printf "%s" "$char"
+        sleep "$sleep_duration"
+    done
+}
