@@ -16,6 +16,9 @@ source "$SCRIPT_DIR/../../library/library-of-voices.sh"
 MAX_SPEAKING_TIME=10
 MAX_DISPLAY_TIME=10 # Reduced from 30 to be less boring
 
+# --- Color Palette ---
+RAINBOW_COLORS=(196 202 208 214 220 226 190 154 118 82 46)
+
 # --- Phrase Libraries ---
 
 intro_phrases=(
@@ -372,7 +375,7 @@ cleanup_and_exit() {
     lov_cleanup
     local exit_phrase=${exit_phrases[$RANDOM % ${#exit_phrases[@]}]}
     lov_say "$exit_phrase"
-    lov_animate_text_rainbow "$exit_phrase" "$MAX_DISPLAY_TIME"
+    lov_animate_text_rainbow "$exit_phrase" "${RAINBOW_COLORS[*]}" "$MAX_DISPLAY_TIME"
     wait_for_speech
     lov_show_cursor
     echo
@@ -390,14 +393,14 @@ the_show_must_go_on() {
 
     if [ -z "$LOV_TTS_ENGINE" ]; then
         local error_phrase=${error_phrases[$RANDOM % ${#error_phrases[@]}]}
-        lov_animate_text_rainbow "$error_phrase" "$MAX_DISPLAY_TIME"
+        lov_animate_text_rainbow "$error_phrase" "${RAINBOW_COLORS[*]}" "$MAX_DISPLAY_TIME"
         sleep 2
         lov_clear_screen
     else
         # Intro phrase
         local intro_phrase=${intro_phrases[$RANDOM % ${#intro_phrases[@]}]}
         lov_say "$intro_phrase"
-        lov_animate_text_rainbow "$intro_phrase" "$MAX_DISPLAY_TIME"
+        lov_animate_text_rainbow "$intro_phrase" "${RAINBOW_COLORS[*]}" "$MAX_DISPLAY_TIME"
         wait_for_speech
         lov_kill_speech
         sleep 2
@@ -407,7 +410,7 @@ the_show_must_go_on() {
     while true; do
         local phrase=${general_phrases[$RANDOM % ${#general_phrases[@]}]}
         lov_say "$phrase"
-        lov_animate_text_rainbow "$phrase" "$MAX_DISPLAY_TIME"
+        lov_animate_text_rainbow "$phrase" "${RAINBOW_COLORS[*]}" "$MAX_DISPLAY_TIME"
         wait_for_speech
         lov_kill_speech
         sleep 2 # Pause between phrases

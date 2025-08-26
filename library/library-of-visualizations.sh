@@ -322,21 +322,17 @@ lov_print_random_char_from_string() {
 }
 
 #
-# Pre-computed rainbow palette for animations
-#
-LOV_RAINBOW_COLORS=(196 202 208 214 220 226 190 154 118 82 46)
-
-#
 # Function: lov_animate_text_rainbow
 #
 # Description:
 #   Animates a string of text at a random position on the screen, with each
-#   character displayed in a different color from a rainbow palette.
+#   character displayed in a different color from a provided palette.
 #
 # Inputs:
 #   $1: The string of text to animate.
-#   $2 (optional): The maximum time in seconds the animation should take.
-#                  Defaults to 30.
+#   $2: A string containing the space-separated list of colors to use.
+#   $3 (optional): The maximum time in seconds the animation should take.
+#                  Defaults to 10.
 #
 # Outputs:
 #   Displays the animated text on the screen.
@@ -348,7 +344,11 @@ LOV_RAINBOW_COLORS=(196 202 208 214 220 226 190 154 118 82 46)
 #
 lov_animate_text_rainbow() {
     local phrase="$1"
-    local max_display_time="${2:-30}" # Default to 30 seconds
+    local colors_str="$2"
+    local max_display_time="${3:-10}" # Default to 10 seconds
+
+    local -a colors=($colors_str)
+    if [ ${#colors[@]} -eq 0 ]; then return; fi # Do nothing if no colors
 
     lov_get_terminal_size
     local len=${#phrase}
@@ -371,9 +371,9 @@ lov_animate_text_rainbow() {
 
     for (( i=0; i<len; i++ )); do
         local char="${phrase:$i:1}"
-        # Cycle through the rainbow colors
-        local color_index=$(( (i + RANDOM) % ${#LOV_RAINBOW_COLORS[@]} ))
-        lov_fore_color "${LOV_RAINBOW_COLORS[$color_index]}"
+        # Cycle through the provided colors
+        local color_index=$(( (i + RANDOM) % ${#colors[@]} ))
+        lov_fore_color "${colors[$color_index]}"
         printf "%s" "$char"
         sleep "$sleep_duration"
     done
