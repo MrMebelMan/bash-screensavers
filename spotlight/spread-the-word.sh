@@ -10,24 +10,36 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 REPO_ROOT=$(dirname "$SCRIPT_DIR")
 
-# The 14 files/directories that are most likely to be at the top of the repo page.
-# This list is hardcoded and can be customized by editing this script.
-TARGETS=(
-    "$REPO_ROOT/.github/workflows/create.release.for.tag.yml"
-    "$REPO_ROOT/gallery/README.md"
-    "$REPO_ROOT/jury/README.md"
-    "$REPO_ROOT/library/README.md"
-    "$REPO_ROOT/spotlight/README.md"
-    "$REPO_ROOT/.editorconfig"
-    "$REPO_ROOT/.gitattributes"
-    "$REPO_ROOT/.gitignore"
-    "$REPO_ROOT/AGENTS.md"
-    "$REPO_ROOT/CONTRIBUTING.md"
-    "$REPO_ROOT/LICENSE"
-    "$REPO_ROOT/README.md"
-    "$REPO_ROOT/jules.md"
-    "$REPO_ROOT/screensaver.sh"
-)
+# Dynamically generate the list of target files.
+# The goal is to select the files that are most prominent on the repo's main page.
+# The logic is as follows:
+# 1. List all files and directories in the root, directories first, excluding .git.
+# 2. For each directory, find a representative file to modify.
+#    - For `.github`, we look for `.yml` workflow files in the `workflows` subdir.
+#    - For other directories, this is `README.md`.
+# 3. For each file in the root, use the file itself.
+TARGETS=()
+while IFS= read -r item; do
+    path="$REPO_ROOT/$item"
+    if [[ -d "$path" ]]; then
+        if [[ "$item" == ".github" ]]; then
+            # Find all .yml files in the .github/workflows directory.
+            # Use process substitution to avoid creating a subshell for the while loop,
+            # which would prevent the TARGETS array from being modified.
+            while IFS= read -r -d '' yml_file; do
+                TARGETS+=("$yml_file")
+            done < <(find "$path/workflows" -name "*.yml" -print0)
+        else
+            # For other directories, look for a README.md
+            if [[ -f "$path/README.md" ]]; then
+                TARGETS+=("$path/README.md")
+            fi
+        fi
+    else
+        # If it's a file, add it to the list
+        TARGETS+=("$path")
+    fi
+done < <(cd "$REPO_ROOT" && ls -A --group-directories-first | grep -v '^\.git$')
 
 # The message file
 MESSAGE_FILE="$REPO_ROOT/spotlight/message.txt"
@@ -54,7 +66,28 @@ for i in "${!TARGETS[@]}"; do
     message="${MESSAGES[$i]}"
 
     # Generate the command to make a trivial change to the file
-    echo "echo ' ' >> \"$target\""
+    cat <<EOF
+# Trivial commit logic for '$target'
+# Count trailing blank lines (lines with only whitespace)
+trailing_lines=\$(awk 'BEGIN{c=0} {if (\$0 ~ /[^[:space:]]/) {c=0} else {c++}} END{print c}' "$target")
+case \$trailing_lines in
+    0)
+        # 0 trailing blank lines, add one
+        echo "" >> "$target"
+        ;;
+    1)
+        # 1 trailing blank line, add one more
+        echo "" >> "$target"
+        ;;
+    *)
+        # 2 or more trailing blank lines, reduce to 1.
+        # This is done by stripping all trailing blank lines and then adding one back.
+        # A temp file is used to ensure sed portability (avoiding -i).
+        sed -e :a -e '/^\\s*\$/{\$d;N;};/\\n\$/ba' "$target" > "$target.tmp" && mv "$target.tmp" "$target"
+        echo "" >> "$target"
+        ;;
+esac
+EOF
 
     # Generate the git commands
     echo "git add \"$target\""
