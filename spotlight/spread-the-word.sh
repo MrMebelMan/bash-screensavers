@@ -13,14 +13,14 @@ REPO_ROOT=$(dirname "$SCRIPT_DIR")
 # The 14 files/directories that are most likely to be at the top of the repo page.
 # This list is hardcoded and can be customized by editing this script.
 TARGETS=(
-    "$REPO_ROOT/library/README.md"
-    "$REPO_ROOT/library/library-of-visualizations.sh"
     "$REPO_ROOT/.github/workflows/create.release.for.tag.yml"
     "$REPO_ROOT/gallery/README.md"
     "$REPO_ROOT/jury/README.md"
+    "$REPO_ROOT/library/README.md"
     "$REPO_ROOT/spotlight/README.md"
     "$REPO_ROOT/.editorconfig"
     "$REPO_ROOT/.gitattributes"
+    "$REPO_ROOT/.gitignore"
     "$REPO_ROOT/AGENTS.md"
     "$REPO_ROOT/CONTRIBUTING.md"
     "$REPO_ROOT/LICENSE"
