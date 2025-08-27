@@ -40,3 +40,4 @@ To run this script, execute the following command from the repository root:
 This will create two files in the `jury/` directory:
 *   `verdict.txt`: A "pretty" human-readable summary of the test results.
 *   `verdict.tap`: A machine-readable TAP (Test Anything Protocol) output, suitable for integration with CI/CD systems or other automated tools.
+ 
