@@ -19,7 +19,6 @@
 #
 
 # Stop executing if any command fails
-set -e
 
 #
 # Function: lov_die_with_honor
@@ -365,7 +364,8 @@ lov_animate_text_rainbow() {
     # Calculate sleep duration to fit within max_display_time
     sleep_duration=$(awk "BEGIN {print $max_display_time / $len}")
     # But don't let it be too slow for short phrases
-    if (( $(echo "$sleep_duration > 0.1" | bc -l) )); then
+    is_too_slow=$(awk -v dur="$sleep_duration" 'BEGIN { print (dur > 0.1) }')
+    if [ "$is_too_slow" -eq 1 ]; then
         sleep_duration=0.1
     fi
 
