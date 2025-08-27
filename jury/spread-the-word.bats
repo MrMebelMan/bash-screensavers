@@ -24,6 +24,8 @@ LINE 9
 LINE 10
 LINE 11
 LINE 12
+LINE 13
+LINE 14
 EOF
 }
 
@@ -39,18 +41,24 @@ teardown() {
     assert_output --partial "git commit"
 }
 
-@test "generates commands for all 12 targets" {
+@test "generates commands for all 14 targets" {
     run ./spotlight/spread-the-word.sh
     assert_success
-    run echo "$output" | grep "git commit" | wc -l
-    assert_output "12"
+    local count=0
+    for line in "${lines[@]}"; do
+        if [[ "$line" == *"git commit"* ]]; then
+            count=$((count + 1))
+        fi
+    done
+    assert_equal "$count" "14"
 }
 
 @test "generates expected first command with absolute paths" {
     run ./spotlight/spread-the-word.sh
     assert_success
-    assert_output --partial "echo ' ' >> \"$REPO_ROOT/.github/workflows/create.release.for.tag.yml\""
-    assert_output --partial "git add \"$REPO_ROOT/.github/workflows/create.release.for.tag.yml\""
+    assert_output --partial "# Trivial commit logic for '/app/.github/workflows/create.release.for.tag.yml'"
+    assert_output --partial "trailing_lines=\$(awk 'BEGIN{c=0} {if (\$0 ~ /[^[:space:]]/) {c=0} else {c++}} END{print c}'"
+    assert_output --partial "git add \"/app/.github/workflows/create.release.for.tag.yml\""
     assert_output --partial "git commit -m \"LINE 1\""
 }
 
