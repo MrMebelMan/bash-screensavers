@@ -1,0 +1,14 @@
+Welcome to Bash Screensavers!
+A collection of screensavers 
+written entirely in Bash.
+Tired of your boring old terminal?
+Well, we can help!
+Spice up your terminal
+with some ASCII art.
+Contributions welcome.
+From humans and AI Agents.
+Create your own screensaver
+and submit it to the gallery!
+Check out our new Library!
+Full of handy visualization tools.
+⏩Enjoy the visual wonder
