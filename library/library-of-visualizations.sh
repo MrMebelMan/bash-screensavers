@@ -378,3 +378,4 @@ lov_animate_text_rainbow() {
         sleep "$sleep_duration"
     done
 }
+ 
