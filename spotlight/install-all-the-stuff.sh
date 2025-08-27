@@ -5,7 +5,6 @@
 # This script installs asciinema and agg on various platforms.
 # It may require sudo privileges to install software.
 
-set -e
 
 # -----------------
 # --- Functions ---

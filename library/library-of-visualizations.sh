@@ -19,7 +19,6 @@
 #
 
 # Stop executing if any command fails
-set -e
 
 #
 # Function: lov_die_with_honor

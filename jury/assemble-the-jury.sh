@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -e
 
 TEST_LIBS_DIR="jury/test_libs"
 
