@@ -5,8 +5,11 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # Run the setup script.
 "${SCRIPT_DIR}/assemble-the-jury.sh"
 
+# cd into the jury directory to run the tests.
+cd "${SCRIPT_DIR}" || exit 1
+
 # Run the bats tests with pretty output.
-"${SCRIPT_DIR}/test_libs/bats-core-1.12.0/bin/bats" --pretty "${SCRIPT_DIR}" > "${SCRIPT_DIR}/verdict.txt"
+"test_libs/bats-core-1.12.0/bin/bats" --pretty . > "verdict.txt"
 
 # Run the bats tests with TAP output.
-"${SCRIPT_DIR}/test_libs/bats-core-1.12.0/bin/bats" --tap "${SCRIPT_DIR}" > "${SCRIPT_DIR}/verdict.tap"
+"test_libs/bats-core-1.12.0/bin/bats" --tap . > "verdict.tap"
