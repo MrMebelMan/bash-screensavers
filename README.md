@@ -32,29 +32,17 @@ when you have `echo`, `sleep`, and a little bit of `tput` magic?
 
 The [Gallery README](./gallery/README.md) has info on all the screensavers.
 
-![Matrix](gallery/matrix/matrix.gif)
+[![Matrix](gallery/matrix/matrix.gif)](./gallery/README.md)
 
 ## Quickstart
 
-To get started, clone the repository and run the main script:
 ```bash
 git clone https://github.com/attogram/bash-screensavers.git
 cd bash-screensavers
 ./screensaver.sh
 ```
-This will display the interactive menu where you can choose a screensaver.
-
-### Command-Line Usage
-
-Alternatively, you can launch a screensaver directly from the command line or use one of the following options:
-
-*   `./screensaver.sh [name]`: Launch a specific screensaver by its name (e.g., `matrix`).
-*   `./screensaver.sh [number]`: Launch a specific screensaver by its number from the menu.
-*   `./screensaver.sh -r` or `--random`: Launch a random screensaver.
-*   `./screensaver.sh -h` or `--help`: Display the help message.
-*   `./screensaver.sh -v` or `--version`: Display the version information.
 ```
-Bash Screensavers v0.0.25 (Mystic Messages)
+Bash Screensavers v0.0.27 (Mystic Shine)
 
   1 . alpha        - random colorful pixels
   2 . bouncing     - bouncing 'O' madness
@@ -73,6 +61,33 @@ Bash Screensavers v0.0.25 (Mystic Messages)
 
 Choose your screensaver:
 ```
+
+## Command-Line Usage
+
+### Start with the menu of screensavers
+`./screensaver.sh`
+
+### Start with a specific screensaver
+
+`./screensaver.sh name`
+
+`./screensaver.sh number`
+
+### Start with a random screensaver:
+
+`./screensaver.sh -r`
+
+### Get help
+
+`./screensaver.sh -h`
+
+### Get version
+
+`./screensaver.sh -v`
+
+### Direct run of a screensaver
+
+`./gallery/name/name.sh`
 
 ## Contributing
 
@@ -98,9 +113,10 @@ They test **everything**. They're a bit batsy about it.
 See the [Jury Criteria](./jury/README.md) for the rules.
 
 ## Library
-Think of this as the art supply closet for our digital gallery. It's filled with reusable scripts and functions—our special blend of paints, brushes, and canvases—to help you craft your own visual masterpieces in bash.
 
-Step into the [workshop](./library/README.md) and see what's available.
+The library is filled with stuff about visualizations and voices.
+
+Read the [Library Index](./library/README.md) to get started.
 
 ## Chat
 
