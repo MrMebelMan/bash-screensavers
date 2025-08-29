@@ -5,11 +5,11 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # Run the setup script.
 "${SCRIPT_DIR}/assemble-the-jury.sh"
 
-# cd into the jury directory to run the tests.
-cd "${SCRIPT_DIR}" || exit 1
+# Set the TERM variable for tput.
+export TERM=xterm
 
 # Run the bats tests with pretty output.
-"test_libs/bats-core-1.12.0/bin/bats" --pretty . > "verdict.txt"
+"${SCRIPT_DIR}/test_libs/bats-core-1.12.0/bin/bats" --pretty "${SCRIPT_DIR}" > "${SCRIPT_DIR}/verdict.txt"
 
 # Run the bats tests with TAP output.
-"test_libs/bats-core-1.12.0/bin/bats" --tap . > "verdict.tap"
+"${SCRIPT_DIR}/test_libs/bats-core-1.12.0/bin/bats" --tap "${SCRIPT_DIR}" > "${SCRIPT_DIR}/verdict.tap"
