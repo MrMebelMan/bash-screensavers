@@ -68,6 +68,15 @@ EOF
 main() {
     check_deps
 
+    # Make sure all cast files are up to date
+    local smile_script="spotlight/smile-for-the-camera.sh"
+    if [ -f "$smile_script" ]; then
+        echo "Running smile-for-the-camera.sh to create up-to-date cast files..."
+        bash "$smile_script"
+    else
+        echo "WARNING: $smile_script not found, using existing cast files."
+    fi
+
     local gallery_dir="gallery"
     local output_dir="."
     local temp_dir

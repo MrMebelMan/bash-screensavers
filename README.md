@@ -112,6 +112,14 @@ They test **everything**. They're a bit batsy about it.
 
 See the [Jury Criteria](./jury/README.md) for the rules.
 
+## Not Ready For Primetime
+
+This directory contains screensavers that are not yet ready for general use.
+
+They may be broken, incomplete, or just not up to the quality standards of the main gallery.
+
+Feel free to experiment with them, but use them at your own risk!
+
 ## Library
 
 The library is filled with stuff about visualizations and voices.

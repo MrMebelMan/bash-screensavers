@@ -27,13 +27,13 @@ teardown() {
     [[ "$output" == *"Error: asciinema not found"* ]]
 }
 
-@test "smile-for-the-camera: exits if agg is not found" {
+@test "smile-for-the-camera: warns if agg is not found" {
     # asciinema is available, agg is not
     touch "$BATS_TMPDIR/asciinema" && chmod +x "$BATS_TMPDIR/asciinema"
 
     run "$SCRIPT"
-    [ "$status" -eq 1 ]
-    [[ "$output" == *"Error: agg not found"* ]]
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Warning: agg not found"* ]]
 }
 
 @test "smile-for-the-camera: creates cast and gif files" {
