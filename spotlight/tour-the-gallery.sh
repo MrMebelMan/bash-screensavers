@@ -68,15 +68,6 @@ EOF
 main() {
     check_deps
 
-    # Make sure all cast files are up to date
-    local smile_script="spotlight/smile-for-the-camera.sh"
-    if [ -f "$smile_script" ]; then
-        echo "Running smile-for-the-camera.sh to create up-to-date cast files..."
-        bash "$smile_script"
-    else
-        echo "WARNING: $smile_script not found, using existing cast files."
-    fi
-
     local gallery_dir="gallery"
     local output_dir="."
     local temp_dir
@@ -98,9 +89,17 @@ main() {
         if [[ -d "$screensaver_dir" ]]; then
             local name
             name=$(basename "$screensaver_dir")
-            local run_script="${screensaver_dir}${name}.sh"
+            local run_script="${screensaver_dir%/}/$name.sh"
 
             if [[ -f "$run_script" ]]; then
+                local cast_file="${screensaver_dir%/}/$name.cast"
+                local gif_file="${screensaver_dir%/}/$name.gif"
+
+                if [ ! -s "$cast_file" ] || [ ! -s "$gif_file" ]; then
+                    echo "  - Cast or GIF file missing for $name. Generating..."
+                    bash spotlight/smile-for-the-camera.sh "$screensaver_dir"
+                fi
+
                 echo "  - Recording snippet for $name..."
 
                 # Title card for the screensaver
@@ -108,7 +107,6 @@ main() {
                 all_casts+=("$temp_dir/$(printf "%02d" $i)_${name}_title.cast")
 
                 # Add the existing cast file
-                local cast_file="${screensaver_dir}${name}.cast"
                 if [[ -f "$cast_file" ]]; then
                     validate_cast "$cast_file"
                     all_casts+=("$cast_file")

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Mock asciinema
+# It needs to create the output file passed with --overwrite or as the last argument.
+# The command is: asciinema rec --command="..." ... "$output_file"
+# Or: asciinema cat ... > "$output_file"
+# The tour-the-gallery script uses both `rec` and `cat`.
+
+if [ "$1" == "rec" ]; then
+    # For `rec`, the output file is the last argument.
+    output_file="${@: -1}"
+    echo "Mock asciinema: recording to $output_file"
+    # Create an empty file with a valid JSON header for validate_cast()
+    echo '{"version": 2, "width": 80, "height": 20, "timestamp": 1, "env": {"SHELL": "/bin/bash", "TERM": "linux"}}' > "$output_file"
+    echo '[0.6, "o", "mock output"]' >> "$output_file"
+elif [ "$1" == "cat" ]; then
+    # For `cat`, the output is redirected, so we just need to produce some valid cast content.
+    echo "Mock asciinema: concatenating casts"
+    echo '{"version": 2, "width": 80, "height": 20, "timestamp": 1, "env": {"SHELL": "/bin/bash", "TERM": "linux"}}'
+    echo '[0.1, "o", "mock concatenated output"]'
+else
+    echo "Mock asciinema: unknown command $1"
+    exit 1
+fi

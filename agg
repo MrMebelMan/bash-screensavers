@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Mock agg
+# agg <input.cast> <output.gif>
+echo "Mock agg: creating $2"
+touch "$2"
