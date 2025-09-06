@@ -83,7 +83,7 @@ main() {
                 # Record with asciinema
                 local raw_cast_file="$temp_dir/$name.raw.cast"
                 rm -f "$raw_cast_file"
-                asciinema rec --command="bash -c 'timeout 10s env SHELL=/bin/bash $run_script'" "$raw_cast_file"
+                asciinema rec --command="bash -c 'tput civis; timeout 10s env SHELL=/bin/bash $run_script'" "$raw_cast_file"
 
                 # Process the cast file with awk to remove startup artifacts
                 local cast_file="${output_path_base}.cast"
