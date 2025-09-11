@@ -223,6 +223,10 @@ parse() {
 
 
 cleanup() {
+    tput cnorm
+    tput sgr0
+    stty echo
+    tput rmcup
     exit 0
 }
 
@@ -259,7 +263,6 @@ init_screen() {
     tput civis
     tput setab 0 # black background
     tput clear
-    trap cleanup HUP TERM
 
     resize
     trap resize SIGWINCH
@@ -314,7 +317,7 @@ main() {
     init_pipes
 
     # any key press exits the loop and this script
-    trap 'break 2' INT
+    trap cleanup INT
 
     local i
     while REPLY=; do
