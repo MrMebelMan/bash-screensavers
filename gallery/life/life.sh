@@ -62,7 +62,7 @@ cleanup() {
    exit 0
 }
 
-trap cleanup EXIT INT TERM QUIT # Set up cleanup on exit/interrupt
+trap cleanup SIGINT # Set up cleanup on exit/interrupt
 
 
 init_grid() {

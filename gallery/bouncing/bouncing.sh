@@ -11,10 +11,12 @@ NUM_OBJECTS=5
 SLEEP_TIME=0.03
 
 _cleanup_and_exit() { # handler for SIGINT (Ctrl‑C)
+  tput cnorm # show cursor
+  tput sgr0 # restore screen
   exit 0
 }
 
-trap _cleanup_and_exit EXIT INT TERM QUIT # Ctrl‑C
+trap _cleanup_and_exit SIGINT # Ctrl‑C
 
 #
 # Main animation loop
