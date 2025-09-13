@@ -1,1 +1,1 @@
-{"version": 2, "width": 80, "height": 24, "timestamp": 1757617290, "env": {"SHELL": "/bin/bash", "TERM": "tmux-256color"}}
+{"version": 2, "width": 80, "height": 20, "timestamp": 1757763075, "env": {"SHELL": "/bin/bash", "TERM": "xterm-256color"}}

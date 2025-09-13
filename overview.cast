@@ -1,3 +1,0 @@
-Mock asciinema: concatenating casts
-{"version": 2, "width": 80, "height": 20, "timestamp": 1, "env": {"SHELL": "/bin/bash", "TERM": "linux"}}
-[0.1, "o", "mock concatenated output"]
