@@ -36,9 +36,26 @@ animate() {
     local ribbon_spacing=7
     local -a radii=()
     local frame_counter=0
+    local frame_buffer=""
+
+    # Plot a point, checking for screen boundaries
+    plot_point() {
+        local x=$1 y=$2 char=$3 color=$4
+        if (( x >= 0 && x < width && y >= 0 && y < height )); then
+            frame_buffer+="\e[$((y + 1));$((x + 1))H${color}${char}"
+        fi
+    }
+
+    # Erase a point, checking for screen boundaries
+    erase_point() {
+        local x=$1 y=$2
+        if (( x >= 0 && x < width && y >= 0 && y < height )); then
+            frame_buffer+="\e[$((y + 1));$((x + 1))H "
+        fi
+    }
 
     while true; do
-        local frame_buffer=""
+        frame_buffer=""
         # Add a new ribbon every few frames
         if (( frame_counter % ribbon_spacing == 0 )); then
             radii+=(1)
@@ -50,14 +67,10 @@ animate() {
                 local prev_r=$((r-1))
                 # Erase the previous shape
                 for ((i=0; i < prev_r; i++)); do
-                    x1=$((center_x + i)); y1=$((center_y - prev_r + i))
-                    x2=$((center_x + prev_r - i)); y2=$((center_y + i))
-                    x3=$((center_x - i)); y3=$((center_y + prev_r - i))
-                    x4=$((center_x - prev_r + i)); y4=$((center_y - i))
-                    frame_buffer+="\e[$((y1 + 1));$((x1 + 1))H "
-                    frame_buffer+="\e[$((y2 + 1));$((x2 + 1))H "
-                    frame_buffer+="\e[$((y3 + 1));$((x3 + 1))H "
-                    frame_buffer+="\e[$((y4 + 1));$((x4 + 1))H "
+                    erase_point $((center_x + i)) $((center_y - prev_r + i))
+                    erase_point $((center_x + prev_r - i)) $((center_y + i))
+                    erase_point $((center_x - i)) $((center_y + prev_r - i))
+                    erase_point $((center_x - prev_r + i)) $((center_y - i))
                 done
             fi
 
@@ -65,14 +78,10 @@ animate() {
             local char=${CHARS[$((r % ${#CHARS[@]}))]}
             # Draw a square/diamond shape
             for ((i=0; i < r; i++)); do
-                x1=$((center_x + i)); y1=$((center_y - r + i))
-                x2=$((center_x + r - i)); y2=$((center_y + i))
-                x3=$((center_x - i)); y3=$((center_y + r - i))
-                x4=$((center_x - r + i)); y4=$((center_y - i))
-                frame_buffer+="\e[$((y1 + 1));$((x1 + 1))H${color}${char}"
-                frame_buffer+="\e[$((y2 + 1));$((x2 + 1))H${color}${char}"
-                frame_buffer+="\e[$((y3 + 1));$((x3 + 1))H${color}${char}"
-                frame_buffer+="\e[$((y4 + 1));$((x4 + 1))H${color}${char}"
+                plot_point $((center_x + i)) $((center_y - r + i)) "$char" "$color"
+                plot_point $((center_x + r - i)) $((center_y + i)) "$char" "$color"
+                plot_point $((center_x - i)) $((center_y + r - i)) "$char" "$color"
+                plot_point $((center_x - r + i)) $((center_y - i)) "$char" "$color"
             done
 
             # Increment radius for the next frame, and keep it if it's not too large
