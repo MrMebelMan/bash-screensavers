@@ -43,6 +43,16 @@ animate() {
     local frame_counter=0
     local frame_buffer=""
 
+    # --- New state variables for movement ---
+    local is_moving=0 # Start in a paused state
+    local next_state_change_time
+    next_state_change_time=$(date +%s)
+    local move_duration=10 # seconds
+    local min_pause_duration=5 # seconds
+    local max_pause_duration=20 # seconds
+    local angle_increment=0.005 # Slow down the movement
+
+
     # Plot a point, checking for screen boundaries
     plot_point() {
         local x=$1 y=$2 char=$3 color=$4
@@ -60,16 +70,38 @@ animate() {
     }
 
     while true; do
-        # --- Update center coordinates for a moving tunnel effect (more efficiently) ---
-        read -r angle center_x center_y < <(awk -v angle="$angle" \
-            -v center_x="$original_center_x" -v center_y="$original_center_y" \
-            -v offset_x="$center_offset_x" -v offset_y="$center_offset_y" \
-            'BEGIN {
-                angle += 0.05;
-                cx = int(center_x + offset_x * cos(angle));
-                cy = int(center_y + offset_y * sin(angle));
-                print angle, cx, cy;
-            }')
+        # --- State management for movement ---
+        local current_time
+        current_time=$(date +%s)
+        if (( current_time >= next_state_change_time )); then
+            if (( is_moving )); then
+                # Transition to paused state
+                is_moving=0
+                local pause_duration=$((RANDOM % (max_pause_duration - min_pause_duration + 1) + min_pause_duration))
+                next_state_change_time=$((current_time + pause_duration))
+            else
+                # Transition to moving state
+                is_moving=1
+                next_state_change_time=$((current_time + move_duration))
+            fi
+        fi
+
+        # --- Update center coordinates only when moving ---
+        if (( is_moving )); then
+            # When moving, the center of the tunnel is continuously recalculated
+            # to create the illusion of flying through a turning tunnel.
+            read -r angle center_x center_y < <(awk -v angle="$angle" \
+                -v center_x="$original_center_x" -v center_y="$original_center_y" \
+                -v offset_x="$center_offset_x" -v offset_y="$center_offset_y" \
+                -v angle_increment="$angle_increment" \
+                'BEGIN {
+                    angle += angle_increment;
+                    cx = int(center_x + offset_x * cos(angle));
+                    cy = int(center_y + offset_y * sin(angle));
+                    print angle, cx, cy;
+                }')
+        fi
+
 
         frame_buffer=""
         # Add a new ribbon every few frames
