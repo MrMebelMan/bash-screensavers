@@ -30,9 +30,14 @@ animate() {
     width=$(tput cols)
     local height
     height=$(tput lines)
-    local center_x=$((width / 2))
-    local center_y=$((height / 2))
-    local max_radius=$(( (height > width ? height : width) / 2 + 2 ))
+    local original_center_x=$((width / 2))
+    local original_center_y=$((height / 2))
+    local center_x=$original_center_x
+    local center_y=$original_center_y
+    local center_offset_x=$((width / 4))
+    local center_offset_y=$((height / 4))
+    local angle=0
+    local max_radius=$((width + height))
     local ribbon_spacing=7
     local -a radii=()
     local frame_counter=0
@@ -55,6 +60,17 @@ animate() {
     }
 
     while true; do
+        # --- Update center coordinates for a moving tunnel effect (more efficiently) ---
+        read -r angle center_x center_y < <(awk -v angle="$angle" \
+            -v center_x="$original_center_x" -v center_y="$original_center_y" \
+            -v offset_x="$center_offset_x" -v offset_y="$center_offset_y" \
+            'BEGIN {
+                angle += 0.05;
+                cx = int(center_x + offset_x * cos(angle));
+                cy = int(center_y + offset_y * sin(angle));
+                print angle, cx, cy;
+            }')
+
         frame_buffer=""
         # Add a new ribbon every few frames
         if (( frame_counter % ribbon_spacing == 0 )); then
