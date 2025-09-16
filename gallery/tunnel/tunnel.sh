@@ -30,9 +30,14 @@ animate() {
     width=$(tput cols)
     local height
     height=$(tput lines)
-    local center_x=$((width / 2))
-    local center_y=$((height / 2))
-    local max_radius=$(( (height > width ? height : width) / 2 + 2 ))
+    local original_center_x=$((width / 2))
+    local original_center_y=$((height / 2))
+    local center_x=$original_center_x
+    local center_y=$original_center_y
+    local center_offset_x=$((width / 4))
+    local center_offset_y=$((height / 4))
+    local angle=0
+    local max_radius=$((width + height))
     local ribbon_spacing=7
     local -a radii=()
     local frame_counter=0
@@ -55,22 +60,36 @@ animate() {
     }
 
     while true; do
+        # --- Update center coordinates for a moving tunnel effect (more efficiently) ---
+        read -r angle center_x center_y < <(awk -v angle="$angle" \
+            -v center_x="$original_center_x" -v center_y="$original_center_y" \
+            -v offset_x="$center_offset_x" -v offset_y="$center_offset_y" \
+            'BEGIN {
+                angle += 0.05;
+                cx = int(center_x + offset_x * cos(angle));
+                cy = int(center_y + offset_y * sin(angle));
+                print angle, cx, cy;
+            }')
+
         frame_buffer=""
         # Add a new ribbon every few frames
         if (( frame_counter % ribbon_spacing == 0 )); then
-            radii+=(1)
+            radii+=("1 $center_x $center_y")
         fi
 
         local -a next_radii=()
-        for r in "${radii[@]}"; do
+        for ridge_data in "${radii[@]}"; do
+            local r cx cy
+            read -r r cx cy <<< "$ridge_data"
+
             if [ $r -gt 0 ]; then
                 local prev_r=$((r-1))
                 # Erase the previous shape
                 for ((i=0; i < prev_r; i++)); do
-                    erase_point $((center_x + i)) $((center_y - prev_r + i))
-                    erase_point $((center_x + prev_r - i)) $((center_y + i))
-                    erase_point $((center_x - i)) $((center_y + prev_r - i))
-                    erase_point $((center_x - prev_r + i)) $((center_y - i))
+                    erase_point $((cx + i)) $((cy - prev_r + i))
+                    erase_point $((cx + prev_r - i)) $((cy + i))
+                    erase_point $((cx - i)) $((cy + prev_r - i))
+                    erase_point $((cx - prev_r + i)) $((cy - i))
                 done
             fi
 
@@ -78,16 +97,16 @@ animate() {
             local char=${CHARS[$((r % ${#CHARS[@]}))]}
             # Draw a square/diamond shape
             for ((i=0; i < r; i++)); do
-                plot_point $((center_x + i)) $((center_y - r + i)) "$char" "$color"
-                plot_point $((center_x + r - i)) $((center_y + i)) "$char" "$color"
-                plot_point $((center_x - i)) $((center_y + r - i)) "$char" "$color"
-                plot_point $((center_x - r + i)) $((center_y - i)) "$char" "$color"
+                plot_point $((cx + i)) $((cy - r + i)) "$char" "$color"
+                plot_point $((cx + r - i)) $((cy + i)) "$char" "$color"
+                plot_point $((cx - i)) $((cy + r - i)) "$char" "$color"
+                plot_point $((cx - r + i)) $((cy - i)) "$char" "$color"
             done
 
             # Increment radius for the next frame, and keep it if it's not too large
             local next_r=$((r + 1))
             if (( next_r < max_radius )); then
-                next_radii+=($next_r)
+                next_radii+=("$next_r $cx $cy")
             fi
         done
 
