@@ -74,19 +74,22 @@ animate() {
         frame_buffer=""
         # Add a new ribbon every few frames
         if (( frame_counter % ribbon_spacing == 0 )); then
-            radii+=(1)
+            radii+=("1 $center_x $center_y")
         fi
 
         local -a next_radii=()
-        for r in "${radii[@]}"; do
+        for ridge_data in "${radii[@]}"; do
+            local r cx cy
+            read -r r cx cy <<< "$ridge_data"
+
             if [ $r -gt 0 ]; then
                 local prev_r=$((r-1))
                 # Erase the previous shape
                 for ((i=0; i < prev_r; i++)); do
-                    erase_point $((center_x + i)) $((center_y - prev_r + i))
-                    erase_point $((center_x + prev_r - i)) $((center_y + i))
-                    erase_point $((center_x - i)) $((center_y + prev_r - i))
-                    erase_point $((center_x - prev_r + i)) $((center_y - i))
+                    erase_point $((cx + i)) $((cy - prev_r + i))
+                    erase_point $((cx + prev_r - i)) $((cy + i))
+                    erase_point $((cx - i)) $((cy + prev_r - i))
+                    erase_point $((cx - prev_r + i)) $((cy - i))
                 done
             fi
 
@@ -94,16 +97,16 @@ animate() {
             local char=${CHARS[$((r % ${#CHARS[@]}))]}
             # Draw a square/diamond shape
             for ((i=0; i < r; i++)); do
-                plot_point $((center_x + i)) $((center_y - r + i)) "$char" "$color"
-                plot_point $((center_x + r - i)) $((center_y + i)) "$char" "$color"
-                plot_point $((center_x - i)) $((center_y + r - i)) "$char" "$color"
-                plot_point $((center_x - r + i)) $((center_y - i)) "$char" "$color"
+                plot_point $((cx + i)) $((cy - r + i)) "$char" "$color"
+                plot_point $((cx + r - i)) $((cy + i)) "$char" "$color"
+                plot_point $((cx - i)) $((cy + r - i)) "$char" "$color"
+                plot_point $((cx - r + i)) $((cy - i)) "$char" "$color"
             done
 
             # Increment radius for the next frame, and keep it if it's not too large
             local next_r=$((r + 1))
             if (( next_r < max_radius )); then
-                next_radii+=($next_r)
+                next_radii+=("$next_r $cx $cy")
             fi
         done
 
