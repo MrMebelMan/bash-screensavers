@@ -373,16 +373,12 @@ wait_for_speech() {
 cleanup_and_exit() {
     lov_kill_speech
     lov_cleanup
-    local exit_phrase=${exit_phrases[$RANDOM % ${#exit_phrases[@]}]}
-    lov_say "$exit_phrase"
-    lov_animate_text_rainbow "$exit_phrase" "${RAINBOW_COLORS[*]}" "$MAX_DISPLAY_TIME"
-    wait_for_speech
     lov_show_cursor
     echo
     exit 0
 }
 
-trap cleanup_and_exit SIGINT
+trap cleanup_and_exit EXIT INT TERM QUIT
 
 # --- The Main Event ---
 the_show_must_go_on() {
